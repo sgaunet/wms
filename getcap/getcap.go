@@ -5,7 +5,8 @@ import (
 	"encoding/xml"
 	"io"
 
-	"github.com/wroge/wms/content"
+	"github.com/sgaunet/wms/content"
+	"github.com/sgaunet/wms/urlmap"
 )
 
 // Formats of a GetCapabilities-Request
@@ -50,13 +51,21 @@ type BBox struct {
 }
 
 // From Capabilities of a WMS service
-func From(url, version, user, password string) (Abilities, error) {
-	var c Abilities
-	request := url + "?SERVICE=WMS&REQUEST=GetCapabilities"
-	if version != "" {
-		request += "&VERSION=" + version
+func From(url *urlmap.URLmap, version string) (c Abilities, err error) {
+	requestURL, err := urlmap.New(url.String())
+	if err != nil {
+		return
 	}
-	reader, err := content.From(request, user, password)
+	// request := url + "?SERVICE=WMS&REQUEST=GetCapabilities"
+	requestURL.AddParameter("SERVICE", "WMS")
+	requestURL.AddParameter("REQUEST", "GetCapabilities")
+	if version != "" {
+		requestURL.AddParameter("VERSION", version)
+	}
+
+	// fmt.Println(requestURL.String())
+	reader, err := content.From(requestURL)
+	// reader, err := content.From(request.Request.String(), request.User.Username(), request.User.Password())
 	if err != nil {
 		return c, err
 	}

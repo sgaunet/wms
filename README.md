@@ -1,5 +1,9 @@
-[![GitHub release](https://img.shields.io/github/release/wroge/wms.svg)](https://github.com/wroge/wms/releases/latest)
-[![Go Report Card](https://goreportcard.com/badge/github.com/wroge/wms)](https://goreportcard.com/report/github.com/wroge/wms)
+[![GitHub release](https://img.shields.io/github/release/sgaunet/wms.svg)](https://github.com/sgaunet/wms/releases/latest)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sgaunet/wms)](https://goreportcard.com/report/github.com/sgaunet/wms)
+
+
+**Original project can be found here: [https://github.com/wroge/wms](https://github.com/wroge/wms)**
+After opening an issue, waiting one year without any contact, I decide to copy it and make some changes I'm finding relevant.
 
 # Web Map Service - Manager
 
@@ -17,7 +21,7 @@ You can download WMS-Tiles and check the Capabilities of a service. Including:
 - MacOS (i386/x86_64)
 - Windows (i386/x86_64)
 
-[Releases](https://github.com/wroge/wms/releases)
+[Releases](https://github.com/sgaunet/wms/releases)
 
 Alternatively, you can install ```wms``` via Homebrew, Scoop, Snapcraft or Docker. Of course, you can also create the executable file from source.
 
@@ -54,7 +58,7 @@ docker run -v "$(pwd)/output:/output" -v "$HOME/wms-config:/wms-config" wroge/wm
 This Go-Project is using ```go mod```. Please clone this repository outside of ```GOPATH```.
 
 ```
-git clone https://github.com/wroge/wms.git
+git clone https://github.com/sgaunet/wms.git
 cd wms
 go build -o wms ./cli
 ```
@@ -144,10 +148,5 @@ wms map terrestris -b 565000,5930000,570000,5935000 --dpi 100 --scale 10000
 ### More
 
 - Expand & Cut bounding boxes (interesting for dynamically generated texts and symbols)
-- Basic Authentication with ```--user```&```--password```
 - ```wms map --help```
 - ```wms cap --help```
-
-## FAQ
-
-...For any problems/questions please open an issue.

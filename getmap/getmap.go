@@ -5,14 +5,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/wroge/wgs84"
 
-	"github.com/wroge/wms/content"
-	"github.com/wroge/wms/getcap"
+	"github.com/sgaunet/wms/getcap"
+	"github.com/sgaunet/wms/urlmap"
 )
 
 // MaxPixel which can be downloaded with GetMap
@@ -21,14 +23,12 @@ var MaxPixel = 64000000
 // Service is a struct which holds the values for the GetMap request
 type Service struct {
 	Capabilities getcap.Abilities
-	URL          string
+	url          *urlmap.URLmap
 	Version      string
 	Format       string
 	Layers       []string
 	Styles       []string
 	EPSG         int
-	User         string
-	Password     string
 }
 
 // New is the constructor which accepts optional parameters
@@ -53,8 +53,8 @@ func (e InvalidInput) Error() string {
 // GetCapabilities puts random values from the GetCapabilities-Document into the Service
 // URL and Version have to be set
 // Is called within the New constructor
-func (s *Service) GetCapabilities(user, password string) (c getcap.Abilities, err error) {
-	c, err = getcap.From(s.URL, s.Version, user, password)
+func (s *Service) GetCapabilities() (c getcap.Abilities, err error) {
+	c, err = getcap.From(s.url, s.Version)
 	if err != nil {
 		return
 	}
@@ -85,17 +85,20 @@ func (s *Service) GetCapabilities(user, password string) (c getcap.Abilities, er
 	return
 }
 
-// AddURL is an optional Parameter for the constructor
-func AddURL(url string) func(*Service) error {
+// SetURL is an optional Parameter for the constructor
+func SetURL(url string) func(*Service) error {
 	return func(s *Service) error {
-		return s.AddURL(url)
+		return s.SetURL(url)
 	}
 }
 
-// AddURL adds a URL to a Service
-func (s *Service) AddURL(url string) (err error) {
-	s.URL = url
-	c, err := s.GetCapabilities(s.User, s.Password)
+// SetURL adds a URL to a Service
+func (s *Service) SetURL(url string) (err error) {
+	s.url, err = urlmap.New(url)
+	if err != nil {
+		return
+	}
+	c, err := s.GetCapabilities()
 	s.Version = c.Version
 	s.Capabilities = c
 	return
@@ -111,7 +114,7 @@ func AddVersion(version string) func(*Service) error {
 // AddVersion adds a version to a Service
 func (s *Service) AddVersion(version string) (err error) {
 	s.Version = version
-	c, err := s.GetCapabilities(s.User, s.Password)
+	c, err := s.GetCapabilities()
 	s.Capabilities = c
 	return
 }
@@ -224,36 +227,36 @@ func (s *Service) AddEPSG(epsgCode int) (err error) {
 	return nil
 }
 
-// Validate validates a Service which is not made by the constructor or methods
-func (s *Service) Validate() (err error) {
-	n := &Service{}
-	n.URL = s.URL
-	err = n.AddVersion(s.Version)
-	if err != nil {
-		return
-	}
-	err = n.AddFormat(s.Format)
-	if err != nil {
-		return
-	}
-	err = n.AddLayers(s.Layers...)
-	if err != nil {
-		return
-	}
-	for i, st := range s.Styles {
-		if st != "" {
-			err = n.AddStyle(s.Layers[i], st)
-			if err != nil {
-				return
-			}
-		}
-	}
-	err = n.AddEPSG(s.EPSG)
-	if err != nil {
-		return
-	}
-	return
-}
+// // Validate validates a Service which is not made by the constructor or methods
+// func (s *Service) Validate() (err error) {
+// 	n := &Service{}
+// 	n.URL = s.URL
+// 	err = n.AddVersion(s.Version)
+// 	if err != nil {
+// 		return
+// 	}
+// 	err = n.AddFormat(s.Format)
+// 	if err != nil {
+// 		return
+// 	}
+// 	err = n.AddLayers(s.Layers...)
+// 	if err != nil {
+// 		return
+// 	}
+// 	for i, st := range s.Styles {
+// 		if st != "" {
+// 			err = n.AddStyle(s.Layers[i], st)
+// 			if err != nil {
+// 				return
+// 			}
+// 		}
+// 	}
+// 	err = n.AddEPSG(s.EPSG)
+// 	if err != nil {
+// 		return
+// 	}
+// 	return
+// }
 
 func (s *Service) String() string {
 	return fmt.Sprintf(`URL: %v
@@ -261,7 +264,7 @@ Version: %v
 Format: %v
 Layers: %v
 Styles: %v
-EPSG: %v`, s.URL, s.Version, s.Format, s.Layers, s.Styles, s.EPSG)
+EPSG: %v`, s.url.String(), s.Version, s.Format, s.Layers, s.Styles, s.EPSG)
 }
 
 // GetFileExt returns the file extension for various formats
@@ -380,15 +383,46 @@ func (s *Service) GetMap(minx, miny, maxx, maxy float64, o Option) (r *bytes.Rea
 		err = InvalidInput("Invalid: BBox is out of bounds: " + fmt.Sprintf("%v,%v,%v,%v", minx, miny, maxx, maxy) + "\nValid BBox: " + bbox.String())
 		return
 	}
-	request := fmt.Sprintf("%v?SERVICE=WMS&REQUEST=GetMap&VERSION=%v&FORMAT=%v&LAYERS=%v&STYLES=%v", s.URL, s.Version, s.Format, strings.Join(s.Layers, ","), strings.Join(s.Styles, ","))
+	// request := fmt.Sprintf("%v?SERVICE=WMS&REQUEST=GetMap&VERSION=%v&FORMAT=%v&LAYERS=%v&STYLES=%v", s.url.String(), s.Version, s.Format, strings.Join(s.Layers, ","), strings.Join(s.Styles, ","))
+	getmapUrl, _ := urlmap.New(s.url.String())
+	getmapUrl.AddParameter("SERVICE", "WMS")
+	getmapUrl.AddParameter("REQUEST", "GetMap")
+	getmapUrl.AddParameter("VERSION", s.Version)
+	getmapUrl.AddParameter("FORMAT", s.Format)
+	getmapUrl.AddParameter("LAYERS", strings.Join(s.Layers, ","))
+	getmapUrl.AddParameter("STYLES", strings.Join(s.Styles, ","))
+
 	if s.Version == "1.3.0" {
-		request += fmt.Sprintf("&CRS=EPSG:%v", s.EPSG)
+		// request += fmt.Sprintf("&CRS=EPSG:%v", s.EPSG)
+		getmapUrl.AddParameter("CRS", fmt.Sprintf("EPSG:%d", s.EPSG))
 	} else {
-		request += fmt.Sprintf("&SRS=EPSG:%v", s.EPSG)
+		getmapUrl.AddParameter("SRS", fmt.Sprintf("EPSG:%d", s.EPSG))
+		// request += fmt.Sprintf("&SRS=EPSG:%v", s.EPSG)
 	}
-	request += fmt.Sprintf("&WIDTH=%v&HEIGHT=%v&BBOX=%.7f,%.7f,%.7f,%.7f", width, height, minx, miny, maxx, maxy)
-	fmt.Println(request)
-	r, err = content.From(request, s.User, s.Password)
+	if width != 0 {
+		// ERR
+	}
+	if height != 0 {
+		// ERR
+	}
+	getmapUrl.AddParameter("HEIGHT", fmt.Sprintf("%d", height))
+	getmapUrl.AddParameter("WIDTH", fmt.Sprintf("%d", width))
+	getmapUrl.AddParameter("BBOX", fmt.Sprintf("%.7f,%.7f,%.7f,%.7f", minx, miny, maxx, maxy))
+
+	// request += fmt.Sprintf("&WIDTH=%v&HEIGHT=%v&BBOX=%.7f,%.7f,%.7f,%.7f", width, height, minx, miny, maxx, maxy)
+	fmt.Println(getmapUrl.String())
+	req, err := http.NewRequest("GET", getmapUrl.String(), nil)
+	if err != nil {
+		return
+	}
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	buf, err := ioutil.ReadAll(resp.Body)
+	r = bytes.NewReader(buf)
 	return r, width, height, err
 }
 

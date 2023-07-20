@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/sgaunet/wms/getcap"
 	"github.com/stretchr/testify/assert"
-	"github.com/wroge/wms/getcap"
 )
 
 func TestSomething(t *testing.T) {

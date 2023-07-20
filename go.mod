@@ -1,4 +1,4 @@
-module github.com/wroge/wms
+module github.com/sgaunet/wms
 
 go 1.17
 
