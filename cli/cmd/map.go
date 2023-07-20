@@ -12,9 +12,9 @@ import (
 	"strings"
 
 	"github.com/disintegration/imaging"
+	"github.com/sgaunet/wms/getmap"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/wroge/wms/getmap"
 )
 
 var getmapCommand = &cobra.Command{
@@ -28,20 +28,6 @@ var getmapCommand = &cobra.Command{
 		if len(args) == 1 {
 			service = args[0]
 		}
-		if cmd.Flag("user").Changed {
-			user, err := cmd.Flags().GetString("user")
-			if err != nil {
-				return err
-			}
-			s.User = user
-		}
-		if cmd.Flag("password").Changed {
-			password, err := cmd.Flags().GetString("password")
-			if err != nil {
-				return err
-			}
-			s.Password = password
-		}
 		url := viper.GetString(service + ".url")
 		if cmd.Flag("url").Changed {
 			url, err = cmd.Flags().GetString("url")
@@ -49,7 +35,7 @@ var getmapCommand = &cobra.Command{
 				return
 			}
 		}
-		err = s.AddURL(url)
+		err = s.SetURL(url)
 		if err != nil {
 			return
 		}

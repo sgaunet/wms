@@ -3,3 +3,4 @@ dist
 output
 wms
 .idea*
+tests

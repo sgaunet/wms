@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/wroge/wms/cli/cmd"
+	"github.com/sgaunet/wms/cli/cmd"
 )
 
 var version = "No Version Provided"
