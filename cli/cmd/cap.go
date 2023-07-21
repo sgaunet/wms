@@ -64,7 +64,10 @@ var getcapCommand = &cobra.Command{
 			fmt.Println(c.Formats)
 		}
 		if l {
-			fmt.Println(c.GetLayerNames())
+			layers := c.GetLayerNames()
+			for _, l := range layers {
+				fmt.Println(l)
+			}
 		}
 		if e {
 			fmt.Println(c.GetBBoxes().GetEPSG())
