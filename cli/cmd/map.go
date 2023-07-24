@@ -35,6 +35,9 @@ var getmapCommand = &cobra.Command{
 				return
 			}
 		}
+		if url == "" {
+			return fmt.Errorf("url is empty")
+		}
 		err = s.SetURL(url)
 		if err != nil {
 			return

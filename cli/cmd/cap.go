@@ -25,6 +25,9 @@ var getcapCommand = &cobra.Command{
 				return
 			}
 		}
+		if url == "" {
+			return fmt.Errorf("url is empty")
+		}
 		w := &getmap.Service{}
 		err = w.SetURL(url)
 		if err != nil {
