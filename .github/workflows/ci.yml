@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - master
     tags:
       - '!*' # Do not execute on tags
     # paths:
