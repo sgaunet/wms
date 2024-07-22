@@ -31,25 +31,12 @@ Alternatively, you can install ```wms``` via Homebrew, Scoop, Snapcraft or Docke
 brew install wroge/tap/wms
 ```
 
-### Scoop (Windows)
-
-```
-scoop bucket add app https://github.com/wroge/scoop-bucket
-scoop install wms
-```
-
-### Snapcraft (Linux)
-
-```
-snap install wms
-```
-
 ### Docker
 
 Docker-Images: [@DockerHub](https://hub.docker.com/r/wroge/wms/tags)
 
 ```
-docker pull wroge/wms:latest
+docker pull sgaunet/wms:latest
 docker run -v "$(pwd)/output:/output" -v "$HOME/wms-config:/wms-config" wroge/wms
 ```
 
