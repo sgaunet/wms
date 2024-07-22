@@ -1,6 +1,6 @@
 [![GitHub release](https://img.shields.io/github/release/sgaunet/wms.svg)](https://github.com/sgaunet/wms/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sgaunet/wms)](https://goreportcard.com/report/github.com/sgaunet/wms)
-
+![GitHub Downloads](https://img.shields.io/github/downloads/sgaunet/wms/total)
 
 **Original project can be found here: [https://github.com/wroge/wms](https://github.com/wroge/wms)**
 After opening an issue, waiting one year without any contact, I decide to copy it and make some changes I'm finding relevant.
