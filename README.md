@@ -3,6 +3,7 @@
 ![GitHub Downloads](https://img.shields.io/github/downloads/sgaunet/wms/total)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5ffa1eabcf0cdc05cbd6/maintainability)](https://codeclimate.com/github/sgaunet/wms/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5ffa1eabcf0cdc05cbd6/test_coverage)](https://codeclimate.com/github/sgaunet/wms/test_coverage)
+[![License](https://img.shields.io/github/license/sgaunet/wms.svg)](LICENSE)
 
 **Original project can be found here: [https://github.com/wroge/wms](https://github.com/wroge/wms)**
 After opening an issue, waiting one year without any contact, I decide to copy it and make some changes I'm finding relevant.
