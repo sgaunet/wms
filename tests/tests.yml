@@ -1,0 +1,66 @@
+name: Exec testsuite
+vars:
+  baseurlr: "https://services.data.shom.fr/INSPIRE/wms/r"
+  baseurlv: "https://services.data.shom.fr/INSPIRE/wms/v"
+  folderResult: "result"
+
+testcases:
+    
+- name: init {{.folderResult}}
+  steps:
+  - type: exec
+    script: |
+      mkdir {{.folderResult}}
+      test -d {{.folderResult}}
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: GetCap raster
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      go run cli/main.go cap -u {{.baseurlr}}
+    info: go run cli/main.go cap -u {{.baseurlr}}
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: GetCap
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      go run cli/main.go cap -u {{.baseurlv}}
+    info: go run cli/main.go cap -u {{.baseurlv}}
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: GetCap raster -l
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      go run cli/main.go cap -u {{.baseurlr}} -l
+    info: go run cli/main.go cap -u {{.baseurlr}} -l
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: GetCap -l
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      go run cli/main.go cap -u {{.baseurlv}} -l
+    info: go run cli/main.go cap -u {{.baseurlv}} -l
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: GetMap raster -l CABLES_BDD_WLD_WGS84G_WMS -b -5,40,12,55 --dpi 100 --scale 10000
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      go run cli/main.go map -u https://services.data.shom.fr/INSPIRE/wms/v -l CABLES_BDD_WLD_WGS84G_WMS -b 42,-5,50,10 -w 1000
+    info: go run cli/main.go map -u https://services.data.shom.fr/INSPIRE/wms/v -l CABLES_BDD_WLD_WGS84G_WMS -b 42,-5,50,10 -w 1000
+    assertions:
+    - result.code ShouldEqual 0

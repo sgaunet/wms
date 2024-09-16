@@ -3,4 +3,5 @@ dist
 output
 wms
 .idea*
-tests
+tests-spe.yml
+log
