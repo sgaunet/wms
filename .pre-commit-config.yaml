@@ -1,0 +1,12 @@
+repos:
+  - repo: https://github.com/sgaunet/pre-commit
+    rev: v0.2.0
+    hooks:
+    - id: osv-scanner
+    - id: govulncheck
+
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.61.0
+    hooks:
+    - id: golangci-lint-config-verify
+    - id: golangci-lint-full
