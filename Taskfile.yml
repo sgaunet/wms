@@ -3,6 +3,9 @@ version: '3'
 vars:
   BINFILE: wms
 
+includes:
+  dev: Taskfile_dev.yml
+
 tasks:
   default:
     desc: "List all available tasks"
