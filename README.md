@@ -31,7 +31,8 @@ Alternatively, you can install ```wms``` via Homebrew, Scoop, Snapcraft or Docke
 ### Homebrew (MacOS)
 
 ```
-brew install wroge/tap/wms
+brew tap sgaunet/homebrew-tools
+brew install sgaunet/tools/wms
 ```
 
 ### Docker

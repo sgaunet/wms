@@ -1,9 +1,7 @@
+version: 2
 before:
   hooks:
     - go mod download
-
-snapshot:
-  name_template: '{{ incpatch .Version }}-next'
 
 builds:
   - env:
@@ -40,18 +38,18 @@ changelog:
 
 archives:
   - name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-    format: binary
+    formats: ['binary']
     files:
       - README.md
       - LICENSE
 
 brews:
   - homepage: 'https://github.com/sgaunet/homebrew-tools'
-    folder: Formula
+    directory: Formula
     commit_author:
       name: sgaunet
-      email: sgaunet@gmail.com
-    tap:
+      email: 1552102+sgaunet@users.noreply.github.com
+    repository:
       owner: sgaunet
       name: homebrew-tools
 
