@@ -1,8 +1,7 @@
 [![GitHub release](https://img.shields.io/github/release/sgaunet/wms.svg)](https://github.com/sgaunet/wms/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sgaunet/wms)](https://goreportcard.com/report/github.com/sgaunet/wms)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sgaunet/wms/total)
-[![Maintainability](https://api.codeclimate.com/v1/badges/5ffa1eabcf0cdc05cbd6/maintainability)](https://codeclimate.com/github/sgaunet/wms/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/5ffa1eabcf0cdc05cbd6/test_coverage)](https://codeclimate.com/github/sgaunet/wms/test_coverage)
+![coverage](https://raw.githubusercontent.com/wiki/sgaunet/wms/coverage-badge.svg)
 [![License](https://img.shields.io/github/license/sgaunet/wms.svg)](LICENSE)
 
 **Original project can be found here: [https://github.com/wroge/wms](https://github.com/wroge/wms)**
