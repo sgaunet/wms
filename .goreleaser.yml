@@ -44,7 +44,8 @@ archives:
       - LICENSE
 
 brews:
-  - homepage: 'https://github.com/sgaunet/homebrew-tools'
+  - homepage: 'https://github.com/sgaunet/wms'
+    description: ''
     directory: Formula
     commit_author:
       name: sgaunet
@@ -52,6 +53,13 @@ brews:
     repository:
       owner: sgaunet
       name: homebrew-tools
+      # Token with 'repo' scope is required for pushing to a different repository
+      token: '{{ .Env.HOMEBREW_TAP_TOKEN }}'
+    url_template: 'https://github.com/sgaunet/wms/releases/download/{{ .Tag }}/{{ .ArtifactName }}'
+    install: |
+      bin.install "{{ .ArtifactName }}" => "wms"
+    test: |
+      system "#{bin}/wms", "--help"
 
 dockers:
   # https://goreleaser.com/customization/docker/
