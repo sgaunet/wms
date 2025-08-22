@@ -36,11 +36,11 @@ brew install sgaunet/tools/wms
 
 ### Docker
 
-Docker-Images: [@DockerHub](https://hub.docker.com/r/wroge/wms/tags)
+Docker-Images: [GitHub Container Registry](https://github.com/sgaunet/wms/pkgs/container/wms)
 
 ```
-docker pull sgaunet/wms:latest
-docker run -v "$(pwd)/output:/output" -v "$HOME/wms-config:/wms-config" wroge/wms
+docker pull ghcr.io/sgaunet/wms:latest
+docker run -v "$(pwd)/output:/output" -v "$HOME/wms-config:/wms-config" ghcr.io/sgaunet/wms
 ```
 
 ### From Source
