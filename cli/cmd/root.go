@@ -10,6 +10,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	configDirPerm = 0750
+)
+
 var root = &cobra.Command{
 	Use: "wms",
 	Long: `This program helps you to generate images via web map services.
@@ -24,7 +28,7 @@ var version = "No Version Provided"
 var versionCommand = &cobra.Command{
 	Use:   "version",
 	Short: "Show Version",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		fmt.Println(version)
 	},
 }
@@ -44,25 +48,32 @@ func initConfig() {
 	viper.AddConfigPath(filepath.Join(home, "wms-config"))
 	viper.SetConfigName(".wms")
 	if err := viper.ReadInConfig(); err != nil {
-		if _, err2 := os.Stat(filepath.Join(home, "wms-config", ".wms.yaml")); os.IsNotExist(err2) {
-			err = os.Mkdir(filepath.Join(home, "wms-config"), 0777)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			_, err = os.Create(filepath.Join(home, "wms-config", ".wms.yaml"))
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		} else {
-			fmt.Println("Can't read config:", err)
-			os.Exit(1)
-		}
+		createConfigIfNotExists(home)
 	}
 }
 
-// Execute root command
+// createConfigIfNotExists creates the config directory and file if they don't exist.
+func createConfigIfNotExists(home string) {
+	configDir := filepath.Join(home, "wms-config")
+	configFile := filepath.Join(configDir, ".wms.yaml")
+	
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		if err := os.Mkdir(configDir, configDirPerm); err != nil {
+			fmt.Printf("Error creating config directory: %v\n", err)
+			os.Exit(1)
+		}
+		// #nosec G304 - This is the standard config path for the application
+		if _, err := os.Create(configFile); err != nil {
+			fmt.Printf("Error creating config file: %v\n", err)
+			os.Exit(1)
+		}
+	} else {
+		fmt.Println("Can't read config file")
+		os.Exit(1)
+	}
+}
+
+// Execute root command.
 func Execute(v string) {
 	version = v
 	err := root.Execute()

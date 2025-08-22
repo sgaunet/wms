@@ -1,3 +1,4 @@
+// Package cmd implements the CLI commands for the WMS tool.
 package cmd
 
 import (
@@ -13,7 +14,8 @@ var getcapCommand = &cobra.Command{
 	Aliases: []string{"getcap"},
 	Args:    cobra.RangeArgs(0, 1),
 	Short:   "Get the capabilities of a WMS",
-	RunE: func(cmd *cobra.Command, args []string) (err error) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		var err error
 		service := "default"
 		if len(args) == 1 {
 			service = args[0]
@@ -22,43 +24,43 @@ var getcapCommand = &cobra.Command{
 		if cmd.Flag("url").Changed {
 			url, err = cmd.Flags().GetString("url")
 			if err != nil {
-				return
+				return fmt.Errorf("getting url: %w", err)
 			}
 		}
 		if url == "" {
-			return fmt.Errorf("url is empty")
+			return ErrEmptyURL
 		}
 		w := &getmap.Service{}
 		err = w.SetURL(url)
 		if err != nil {
-			return
+			return fmt.Errorf("setting URL: %w", err)
 		}
 		version := viper.GetString(service + ".version")
 		if cmd.Flag("version").Changed {
 			version, err = cmd.Flags().GetString("version")
 			if err != nil {
-				return
+				return fmt.Errorf("getting version: %w", err)
 			}
 		}
 		err = w.AddVersion(version)
 		if err != nil {
-			return
+			return fmt.Errorf("adding version: %w", err)
 		}
 		f, err := cmd.Flags().GetBool("formats")
 		if err != nil {
-			return
+			return fmt.Errorf("getting formats flag: %w", err)
 		}
 		l, err := cmd.Flags().GetBool("layers")
 		if err != nil {
-			return
+			return fmt.Errorf("getting layers flag: %w", err)
 		}
 		e, err := cmd.Flags().GetBool("epsg")
 		if err != nil {
-			return
+			return fmt.Errorf("getting epsg flag: %w", err)
 		}
 		c, err := w.GetCapabilities()
 		if err != nil {
-			return
+			return fmt.Errorf("getting capabilities: %w", err)
 		}
 		if !f && !l && !e {
 			fmt.Println(c)
@@ -75,7 +77,7 @@ var getcapCommand = &cobra.Command{
 		if e {
 			fmt.Println(c.GetBBoxes().GetEPSG())
 		}
-		return
+		return nil
 	},
 }
 
