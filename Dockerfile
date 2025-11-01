@@ -1,4 +1,4 @@
-FROM alpine:3.22.1 as certs
+FROM alpine:3.22.2 as certs
 
 FROM scratch
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
