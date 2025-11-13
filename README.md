@@ -19,17 +19,13 @@ You can download WMS-Tiles and check the Capabilities of a service. Including:
 
 ## Install
 
-- Linux (i386/x86_64)
-- MacOS (i386/x86_64)
-- Windows (i386/x86_64)
-
 [Releases](https://github.com/sgaunet/wms/releases)
 
-Alternatively, you can install ```wms``` via Homebrew, Scoop, Snapcraft or Docker. Of course, you can also create the executable file from source.
+Alternatively, you can install ```wms``` via Homebrew or Docker. Of course, you can also create the executable file from source.
 
 ### Homebrew (MacOS)
 
-```
+```bash
 brew tap sgaunet/homebrew-tools
 brew install sgaunet/tools/wms
 ```
