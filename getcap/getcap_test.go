@@ -17,6 +17,35 @@ func TestSomething(t *testing.T) {
 	assert.Equal(c.GetBBox(4326).GetEPSG(), 4326, "Should be equal")
 }
 
+func TestWMS130Format(t *testing.T) {
+	assert := assert.New(t)
+
+	r := strings.NewReader(test130)
+	c, err := Read(r)
+	assert.Nil(err, "Should be nil for WMS 1.3.0 format")
+	assert.Equal("1.3.0", c.Version, "Version should be 1.3.0")
+	assert.Equal("WMS Server", c.Name, "Service name should match")
+	assert.Equal("Test WMS 1.3.0", c.Title, "Service title should match")
+	assert.Equal(c.GetLayer("test_layer").Name, "test_layer", "Should find test layer")
+	assert.Equal(c.GetBBox(4326).GetEPSG(), 4326, "Should find EPSG:4326 bbox")
+}
+
+func TestBothFormats(t *testing.T) {
+	assert := assert.New(t)
+
+	// Test WMS 1.1.1 format
+	r11x := strings.NewReader(test)
+	c11x, err := Read(r11x)
+	assert.Nil(err, "Should parse WMS 1.1.1 format")
+	assert.Equal("1.1.1", c11x.Version, "Should detect version 1.1.1")
+
+	// Test WMS 1.3.0 format
+	r130 := strings.NewReader(test130)
+	c130, err := Read(r130)
+	assert.Nil(err, "Should parse WMS 1.3.0 format")
+	assert.Equal("1.3.0", c130.Version, "Should detect version 1.3.0")
+}
+
 var test = `<?xml version="1.0"?>
 <!DOCTYPE WMT_MS_Capabilities SYSTEM "http://schemas.opengis.net/wms/1.1.1/WMS_MS_Capabilities.dtd"
  [
@@ -196,3 +225,68 @@ var test = `<?xml version="1.0"?>
   </Layer>
 </Capability>
 </WMT_MS_Capabilities>`
+
+var test130 = `<?xml version="1.0" encoding="UTF-8"?>
+<WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink">
+<Service>
+  <Name>WMS Server</Name>
+  <Title>Test WMS 1.3.0</Title>
+  <Abstract>Test WMS service using version 1.3.0 format</Abstract>
+  <OnlineResource xlink:href="http://example.com/wms"/>
+</Service>
+<Capability>
+  <Request>
+    <GetCapabilities>
+      <Format>text/xml</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xlink:href="http://example.com/wms?"/></Get>
+        </HTTP>
+      </DCPType>
+    </GetCapabilities>
+    <GetMap>
+      <Format>image/png</Format>
+      <Format>image/jpeg</Format>
+      <DCPType>
+        <HTTP>
+          <Get><OnlineResource xlink:href="http://example.com/wms?"/></Get>
+        </HTTP>
+      </DCPType>
+    </GetMap>
+  </Request>
+  <Exception>
+    <Format>XML</Format>
+  </Exception>
+  <Layer>
+    <Title>Test WMS 1.3.0</Title>
+    <CRS>EPSG:4326</CRS>
+    <CRS>EPSG:3857</CRS>
+    <EX_GeographicBoundingBox>
+      <westBoundLongitude>-180</westBoundLongitude>
+      <eastBoundLongitude>180</eastBoundLongitude>
+      <southBoundLatitude>-90</southBoundLatitude>
+      <northBoundLatitude>90</northBoundLatitude>
+    </EX_GeographicBoundingBox>
+    <BoundingBox CRS="EPSG:4326" minx="-90" miny="-180" maxx="90" maxy="180"/>
+    <BoundingBox CRS="EPSG:3857" minx="-20037508.34" miny="-20037508.34" maxx="20037508.34" maxy="20037508.34"/>
+    <Layer queryable="1">
+      <Name>test_layer</Name>
+      <Title>Test Layer</Title>
+      <CRS>EPSG:4326</CRS>
+      <CRS>EPSG:3857</CRS>
+      <EX_GeographicBoundingBox>
+        <westBoundLongitude>-180</westBoundLongitude>
+        <eastBoundLongitude>180</eastBoundLongitude>
+        <southBoundLatitude>-90</southBoundLatitude>
+        <northBoundLatitude>90</northBoundLatitude>
+      </EX_GeographicBoundingBox>
+      <BoundingBox CRS="EPSG:4326" minx="-90" miny="-180" maxx="90" maxy="180"/>
+      <BoundingBox CRS="EPSG:3857" minx="-20037508.34" miny="-20037508.34" maxx="20037508.34" maxy="20037508.34"/>
+      <Style>
+        <Name>default</Name>
+        <Title>Default Style</Title>
+      </Style>
+    </Layer>
+  </Layer>
+</Capability>
+</WMS_Capabilities>`
