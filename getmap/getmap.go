@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -503,19 +504,9 @@ func executeGetMapRequest(url string, opts ...content.Option) (*bytes.Reader, er
 }
 
 func contains(xx []string, y string) bool {
-	for _, x := range xx {
-		if x == y {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(xx, y)
 }
 
 func containsInt(xx []int, y int) bool {
-	for _, x := range xx {
-		if x == y {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(xx, y)
 }
