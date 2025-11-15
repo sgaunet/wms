@@ -31,6 +31,20 @@ var getcapCommand = &cobra.Command{
 			return ErrEmptyURL
 		}
 		w := &getmap.Service{}
+
+		// Set authentication if provided
+		user, err := cmd.Flags().GetString("user")
+		if err != nil {
+			return fmt.Errorf("getting user: %w", err)
+		}
+		password, err := cmd.Flags().GetString("password")
+		if err != nil {
+			return fmt.Errorf("getting password: %w", err)
+		}
+		if user != "" {
+			w.SetAuth(user, password)
+		}
+
 		err = w.SetURL(url)
 		if err != nil {
 			return fmt.Errorf("setting URL: %w", err)
@@ -88,6 +102,9 @@ func init() {
 	getcapCommand.Flags().BoolP("formats", "f", false, "Get available formats")
 	getcapCommand.Flags().BoolP("layers", "l", false, "Get available layers")
 	getcapCommand.Flags().BoolP("epsg", "e", false, "Get available epsg-codes")
+
+	getcapCommand.Flags().StringP("user", "", "", "Set user for Basic Authentication")
+	getcapCommand.Flags().StringP("password", "", "", "Set password for Basic Authentication")
 
 	root.AddCommand(getcapCommand)
 }

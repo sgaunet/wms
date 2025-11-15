@@ -35,6 +35,20 @@ var getmapCommand = &cobra.Command{
 		if len(args) == 1 {
 			service = args[0]
 		}
+
+		// Set authentication if provided
+		user, err := cmd.Flags().GetString("user")
+		if err != nil {
+			return fmt.Errorf("getting user flag: %w", err)
+		}
+		password, err := cmd.Flags().GetString("password")
+		if err != nil {
+			return fmt.Errorf("getting password flag: %w", err)
+		}
+		if user != "" {
+			s.SetAuth(user, password)
+		}
+
 		url := viper.GetString(service + ".url")
 		if cmd.Flag("url").Changed {
 			url, err = cmd.Flags().GetString("url")

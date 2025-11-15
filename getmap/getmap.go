@@ -13,6 +13,7 @@ import (
 
 	"github.com/wroge/wgs84"
 
+	"github.com/sgaunet/wms/content"
 	"github.com/sgaunet/wms/getcap"
 	"github.com/sgaunet/wms/urlmap"
 )
@@ -37,6 +38,7 @@ type Service struct {
 	Layers       []string
 	Styles       []string
 	EPSG         int
+	authOptions  []content.Option
 }
 
 // New is the constructor which accepts optional parameters.
@@ -57,11 +59,18 @@ func (e InvalidInputError) Error() string {
 	return string(e)
 }
 
+// SetAuth sets authentication credentials for WMS requests.
+func (s *Service) SetAuth(username, password string) {
+	if username != "" {
+		s.authOptions = []content.Option{content.WithBasicAuth(username, password)}
+	}
+}
+
 // GetCapabilities puts random values from the GetCapabilities-Document into the Service.
 // URL and Version have to be set.
 // Is called within the New constructor.
 func (s *Service) GetCapabilities() (getcap.Abilities, error) {
-	c, err := getcap.From(s.url, s.Version)
+	c, err := getcap.From(s.url, s.Version, s.authOptions...)
 	if err != nil {
 		return getcap.Abilities{}, fmt.Errorf("getting capabilities: %w", err)
 	}
@@ -395,7 +404,7 @@ func (s *Service) GetMap(minx, miny, maxx, maxy float64, o Option) (*bytes.Reade
 	}
 
 	fmt.Println(getmapURL.String())
-	r, err := executeGetMapRequest(getmapURL.String())
+	r, err := executeGetMapRequest(getmapURL.String(), s.authOptions...)
 	if err != nil {
 		return nil, 0, 0, err
 	}
@@ -458,12 +467,24 @@ func (s *Service) buildGetMapURL(minx, miny, maxx, maxy float64, width, height i
 	return getmapURL, nil
 }
 
-// executeGetMapRequest performs the HTTP request to get the map.
-func executeGetMapRequest(url string) (*bytes.Reader, error) {
+// executeGetMapRequest performs the HTTP request to get the map with optional authentication.
+func executeGetMapRequest(url string, opts ...content.Option) (*bytes.Reader, error) {
+	// Apply options to extract credentials
+	cfg := &content.Config{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating HTTP request: %w", err)
 	}
+
+	// Apply Basic Authentication if credentials are provided
+	if cfg.Username != "" {
+		req.SetBasicAuth(cfg.Username, cfg.Password)
+	}
+
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

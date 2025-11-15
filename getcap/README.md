@@ -5,7 +5,19 @@
 Golang package for reading ```GetCapabilities``` documents from Web Map Services. With extensive use of the stringer interface.
 
 ```go
-cap, _ := getcap.From("http://ows.terrestris.de/osm/service", "1.1.1", "user", "password")
+import (
+	"github.com/sgaunet/wms/content"
+	"github.com/sgaunet/wms/getcap"
+	"github.com/sgaunet/wms/urlmap"
+)
+
+// Without authentication
+url, _ := urlmap.New("http://ows.terrestris.de/osm/service")
+cap, _ := getcap.From(url, "1.1.1")
+
+// With Basic Authentication
+url, _ := urlmap.New("http://protected.example.com/wms")
+cap, _ := getcap.From(url, "1.1.1", content.WithBasicAuth("user", "password"))
 
 layers := cap.GetLayerNames()
 // [OSM-WMS OSM-Overlay-WMS TOPO-WMS TOPO-OSM-WMS SRTM30-Hillshade SRTM30-Colored SRTM30-Colored-Hillshade SRTM30-Contour]
