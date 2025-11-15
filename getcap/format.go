@@ -38,14 +38,15 @@ func (ff Formats) String() string {
 }
 
 func (ll Layers) String() string {
-	var result string
+	var builder strings.Builder
 	for i, l := range ll {
-		result += l.String() + "\n"
+		builder.WriteString(l.String())
+		builder.WriteString("\n")
 		if i < len(ll)-1 {
-			result += "\n"
+			builder.WriteString("\n")
 		}
 	}
-	return result
+	return builder.String()
 }
 
 func (l Layer) String() string {
@@ -67,16 +68,16 @@ func (ss Styles) String() string {
 }
 
 func (bb BBoxes) String() string {
-	var result string
+	var builder strings.Builder
 	for i, b := range bb {
 		if b.GetEPSG() != 0 {
-			result += fmt.Sprintf("EPSG:%v %v", b.GetEPSG(), b)
+			builder.WriteString(fmt.Sprintf("EPSG:%v %v", b.GetEPSG(), b))
 			if i < len(bb)-1 {
-				result += "\n"
+				builder.WriteString("\n")
 			}
 		}
 	}
-	return result
+	return builder.String()
 }
 
 func (b BBox) String() string {

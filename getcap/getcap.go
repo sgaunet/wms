@@ -76,22 +76,20 @@ type BBox struct {
 	MaxY float64 `xml:"maxy,attr"`
 }
 
-// From Capabilities of a WMS service.
-func From(url *urlmap.URLmap, version string) (Abilities, error) {
+// From Capabilities of a WMS service with optional authentication.
+// Options can include authentication credentials via content.WithBasicAuth.
+func From(url *urlmap.URLmap, version string, opts ...content.Option) (Abilities, error) {
 	requestURL, err := urlmap.New(url.String())
 	if err != nil {
 		return Abilities{}, fmt.Errorf("creating request URL: %w", err)
 	}
-	// request := url + "?SERVICE=WMS&REQUEST=GetCapabilities"
 	requestURL.AddParameter("SERVICE", "WMS")
 	requestURL.AddParameter("REQUEST", "GetCapabilities")
 	if version != "" {
 		requestURL.AddParameter("VERSION", version)
 	}
 
-	// fmt.Println(requestURL.String())
-	reader, err := content.From(requestURL)
-	// reader, err := content.From(request.Request.String(), request.User.Username(), request.User.Password())
+	reader, err := content.From(requestURL, opts...)
 	if err != nil {
 		return Abilities{}, fmt.Errorf("fetching capabilities: %w", err)
 	}

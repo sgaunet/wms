@@ -11,13 +11,42 @@ import (
 	"github.com/sgaunet/wms/urlmap"
 )
 
-// From return data from a URL with Basic Auth.
-func From(url *urlmap.URLmap) (*bytes.Reader, error) {
+// Option is a functional option for configuring HTTP requests.
+type Option func(*Config)
+
+// Config holds the configuration for HTTP requests.
+type Config struct {
+	Username string
+	Password string
+}
+
+// WithBasicAuth returns an Option that sets HTTP Basic Authentication credentials.
+func WithBasicAuth(username, password string) Option {
+	return func(c *Config) {
+		c.Username = username
+		c.Password = password
+	}
+}
+
+// From fetches data from a URL with optional configuration.
+// Options can include authentication credentials via WithBasicAuth.
+func From(url *urlmap.URLmap, opts ...Option) (*bytes.Reader, error) {
+	cfg := &Config{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
 	client := &http.Client{}
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
+
+	// Apply Basic Authentication if credentials are provided
+	if cfg.Username != "" {
+		req.SetBasicAuth(cfg.Username, cfg.Password)
+	}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("executing request: %w", err)
