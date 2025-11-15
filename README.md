@@ -3,6 +3,11 @@
 ![GitHub Downloads](https://img.shields.io/github/downloads/sgaunet/wms/total)
 ![coverage](https://raw.githubusercontent.com/wiki/sgaunet/wms/coverage-badge.svg)
 [![License](https://img.shields.io/github/license/sgaunet/wms.svg)](LICENSE)
+[![Linter](https://github.com/sgaunet/wms/actions/workflows/linter.yml/badge.svg)](https://github.com/sgaunet/wms/actions/workflows/linter.yml)
+[![Coverage](https://github.com/sgaunet/wms/actions/workflows/coverage.yml/badge.svg)](https://github.com/sgaunet/wms/actions/workflows/coverage.yml)
+[![Snapshot](https://github.com/sgaunet/wms/actions/workflows/snapshot.yml/badge.svg)](https://github.com/sgaunet/wms/actions/workflows/snapshot.yml)
+[![Release](https://github.com/sgaunet/wms/actions/workflows/release.yml/badge.svg)](https://github.com/sgaunet/wms/actions/workflows/release.yml)
+[![Vulnerability Scan](https://github.com/sgaunet/wms/actions/workflows/vulnerability-scan.yml/badge.svg)](https://github.com/sgaunet/wms/actions/workflows/vulnerability-scan.yml)
 
 **Original project can be found here: [https://github.com/wroge/wms](https://github.com/wroge/wms)**
 After opening an issue, waiting one year without any contact, I decide to copy it and make some changes I'm finding relevant.
